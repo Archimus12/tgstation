@@ -417,7 +417,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	force = 2
 	throwforce = 10 //10 + 2 (WEIGHT_CLASS_SMALL) * 4 (EMBEDDED_IMPACT_PAIN_MULTIPLIER) = 18 damage on hit due to guaranteed embedding
 	throw_speed = 4
-	embed_type = /datum/embed_data/throwing_star
+	embed_type = /datum/embedding/throwing_star
 	armour_penetration = 40
 
 	w_class = WEIGHT_CLASS_SMALL
@@ -425,7 +425,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	custom_materials = list(/datum/material/iron= SMALL_MATERIAL_AMOUNT * 5, /datum/material/glass= SMALL_MATERIAL_AMOUNT * 5)
 	resistance_flags = FIRE_PROOF
 
-/datum/embed_data/throwing_star
+/datum/embedding/throwing_star
 	pain_mult = 4
 	embed_chance = 100
 	fall_chance = 0
@@ -434,9 +434,9 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	name = "shock throwing star"
 	desc = "An aerodynamic disc designed to cause excruciating pain when stuck inside fleeing targets, hopefully without causing fatal harm."
 	throwforce = 5
-	embed_type = /datum/embed_data/throwing_star/stamina
+	embed_type = /datum/embedding/throwing_star/stamina
 
-/datum/embed_data/throwing_star/stamina
+/datum/embedding/throwing_star/stamina
 	pain_mult = 5
 	jostle_chance = 10
 	pain_stam_pct = 0.8
@@ -448,9 +448,9 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	sharpness = NONE
 	force = 0
 	throwforce = 0
-	embed_type = /datum/embed_data/throwing_star/toy
+	embed_type = /datum/embedding/throwing_star/toy
 
-/datum/embed_data/throwing_star/toy
+/datum/embedding/throwing_star/toy
 	pain_mult = 0
 	jostle_pain_mult = 0
 
@@ -474,6 +474,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 
 /obj/item/carpenter_hammer/Initialize(mapload)
 	. = ..()
+	AddElement(/datum/element/kneejerk)
 	AddComponent(/datum/component/item_killsound, \
 	allowed_mobs = list(/mob/living/carbon/human), \
 	killsound = 'sound/items/weapons/hammer_death_scream.ogg', \
@@ -734,7 +735,6 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 		attack_verb_simple_on = list("smack", "strike", "crack", "beat"), \
 	)
 	RegisterSignal(src, COMSIG_TRANSFORMING_ON_TRANSFORM, PROC_REF(on_transform))
-	ADD_TRAIT(src, TRAIT_BLIND_TOOL, INNATE_TRAIT)
 
 /obj/item/cane/white/handle_limping(mob/living/user)
 	return HAS_TRAIT(src, TRAIT_TRANSFORM_ACTIVE) ? COMPONENT_CANCEL_LIMP : NONE
@@ -749,6 +749,12 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 
 	if(user)
 		balloon_alert(user, active ? "extended" : "collapsed")
+
+	if(!HAS_TRAIT(src, TRAIT_BLIND_TOOL))
+		ADD_TRAIT(src, TRAIT_BLIND_TOOL, INNATE_TRAIT)
+	else
+		REMOVE_TRAIT(src, TRAIT_BLIND_TOOL, INNATE_TRAIT)
+
 	playsound(src, 'sound/items/weapons/batonextend.ogg', 50, TRUE)
 	return COMPONENT_NO_DEFAULT_MESSAGE
 
@@ -1000,7 +1006,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	thrown_datums.Cut()
 	return ..()
 
-/obj/item/melee/baseball_bat/pre_attack(atom/movable/target, mob/living/user, params)
+/obj/item/melee/baseball_bat/pre_attack(atom/movable/target, mob/living/user, list/modifiers, list/attack_modifiers)
 	var/turf/target_turf = get_turf(target)
 	if(!target_turf)
 		return ..()
@@ -1025,7 +1031,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 		angle = 180
 	if(target.dir & target_to_user)
 		angle = 360
-	var/turf/return_to_sender = get_ranged_target_turf_direct(user, throw_datum.starting_turf, round(target.throw_range * 1.5, 1), offset = angle + (rand(-1, 1) * 10))
+	var/turf/return_to_sender = get_ranged_target_turf_direct(user, throw_datum.starting_turf, max(3, round(target.throw_range * 1.5, 1)), offset = angle + (rand(-1, 1) * 10))
 	throw_datum.finalize(hit = FALSE)
 	target.mouse_opacity = MOUSE_OPACITY_TRANSPARENT //dont mess with our ball
 	target.color = list(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,3) //make them super light
@@ -1126,7 +1132,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 		))
 
 
-/obj/item/melee/flyswatter/afterattack(atom/target, mob/user, click_parameters)
+/obj/item/melee/flyswatter/afterattack(atom/target, mob/user, list/modifiers, list/attack_modifiers)
 	if(is_type_in_typecache(target, splattable))
 		to_chat(user, span_warning("You easily splat [target]."))
 		if(isliving(target))
@@ -1163,12 +1169,11 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	name = "\improper ACME Extendo-Hand"
 	desc = "A novelty extendo-hand produced by the ACME corporation. Originally designed to knock out roadrunners."
 
-/obj/item/extendohand/attack(atom/M, mob/living/carbon/human/user, params)
+/obj/item/extendohand/attack(atom/M, mob/living/carbon/human/user, list/modifiers, list/attack_modifiers)
 	var/dist = get_dist(M, user)
 	if(dist < min_reach)
 		to_chat(user, span_warning("[M] is too close to use [src] on."))
 		return
-	var/list/modifiers = params2list(params)
 	M.attack_hand(user, modifiers)
 
 /obj/item/gohei
@@ -1234,7 +1239,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	throwforce = 25
 	throw_speed = 4
 	attack_speed = CLICK_CD_HYPER_RAPID
-	embed_type = /datum/embed_data/hfr_blade
+	embed_type = /datum/embedding/hfr_blade
 	block_chance = 25
 	block_sound = 'sound/items/weapons/parry.ogg'
 	sharpness = SHARP_EDGED
@@ -1249,7 +1254,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	/// The previous target we attacked
 	var/datum/weakref/previous_target
 
-/datum/embed_data/hfr_blade
+/datum/embedding/hfr_blade
 	embed_chance = 100
 
 /obj/item/highfrequencyblade/Initialize(mapload)
@@ -1276,16 +1281,16 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 		return TRUE
 	return FALSE
 
-/obj/item/highfrequencyblade/pre_attack(atom/A, mob/living/user, params)
+/obj/item/highfrequencyblade/pre_attack(atom/target, mob/living/user, list/modifiers, list/attack_modifiers)
 	. = ..()
 	if(.)
 		return .
 	if(!HAS_TRAIT(src, TRAIT_WIELDED))
 		return . // Default attack
-	if(isliving(A) && HAS_TRAIT(src, TRAIT_PACIFISM))
+	if(isliving(target) && HAS_TRAIT(src, TRAIT_PACIFISM))
 		return . // Default attack (ultimately nothing)
 
-	return slash(A, user, params)
+	return slash(target, user, modifiers)
 
 /// triggered on wield of two handed item
 /obj/item/highfrequencyblade/proc/on_wield(obj/item/source, mob/user)
@@ -1295,9 +1300,8 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 /obj/item/highfrequencyblade/proc/on_unwield(obj/item/source, mob/user)
 	update_icon(UPDATE_ICON_STATE)
 
-/obj/item/highfrequencyblade/proc/slash(atom/target, mob/living/user, params)
+/obj/item/highfrequencyblade/proc/slash(atom/target, mob/living/user, list/modifiers)
 	user.do_attack_animation(target, "nothing")
-	var/list/modifiers = params2list(params)
 	var/damage_mod = 1
 	var/x_slashed = text2num(modifiers[ICON_X]) || ICON_SIZE_X/2 //in case we arent called by a client
 	var/y_slashed = text2num(modifiers[ICON_Y]) || ICON_SIZE_Y/2 //in case we arent called by a client
@@ -1359,7 +1363,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	animate(src, duration*0.5, color = slash_color, transform = scaled_transform, alpha = 255)
 
 /obj/item/highfrequencyblade/wizard
-	desc = "A blade that was mastercrafted by a legendary blacksmith. Its' enchantments let it slash through anything."
+	desc = "A blade that was mastercrafted by a legendary blacksmith. Its enchantments let it slash through anything."
 	force = 8
 	throwforce = 20
 	wound_bonus = 20

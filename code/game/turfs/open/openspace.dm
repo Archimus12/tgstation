@@ -34,7 +34,7 @@
 	return INITIALIZE_HINT_LATELOAD
 
 /turf/open/openspace/LateInitialize()
-	AddElement(/datum/element/turf_z_transparency)
+	ADD_TURF_TRANSPARENCY(src, INNATE_TRAIT)
 
 /turf/open/openspace/ChangeTurf(path, list/new_baseturfs, flags)
 	UnregisterSignal(src, COMSIG_ATOM_AFTER_SUCCESSFUL_INITIALIZED_ON)
@@ -113,7 +113,7 @@
 /turf/open/openspace/proc/CanBuildHere()
 	return can_build_on
 
-/turf/open/openspace/attackby(obj/item/attacking_item, mob/user, params)
+/turf/open/openspace/attackby(obj/item/attacking_item, mob/user, list/modifiers)
 	..()
 	if(!CanBuildHere())
 		return
@@ -210,3 +210,6 @@
 
 /turf/open/openspace/telecomms
 	initial_gas_mix = TCOMMS_ATMOS
+
+/turf/open/openspace/coldroom
+	initial_gas_mix = KITCHEN_COLDROOM_ATMOS

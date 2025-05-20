@@ -1,9 +1,5 @@
 import { filter, sortBy } from 'common/collections';
-import { BooleanLike, classes } from 'common/react';
-import { createSearch } from 'common/string';
 import { useState } from 'react';
-
-import { useBackend } from '../backend';
 import {
   Box,
   Button,
@@ -16,9 +12,13 @@ import {
   Tabs,
   Tooltip,
   VirtualList,
-} from '../components';
+} from 'tgui-core/components';
+import { BooleanLike, classes } from 'tgui-core/react';
+import { createSearch } from 'tgui-core/string';
+
+import { useBackend } from '../backend';
 import { Window } from '../layouts';
-import { Food } from './PreferencesMenu/data';
+import { Food } from './PreferencesMenu/types';
 
 const TYPE_ICONS = {
   'Can Make': 'utensils',
@@ -264,13 +264,14 @@ export const PersonalCrafting = (props) => {
                 <Stack.Item>
                   <Input
                     autoFocus
+                    expensive
                     placeholder={
                       'Search in ' +
                       data.recipes.length +
                       (mode === MODE.cooking ? ' recipes...' : ' designs...')
                     }
                     value={searchText}
-                    onInput={(e, value) => {
+                    onChange={(value) => {
                       setPages(1);
                       setSearchText(value);
                     }}
@@ -330,8 +331,8 @@ export const PersonalCrafting = (props) => {
                     </Tabs.Tab>
                   </Tabs>
                 </Stack.Item>
-                <Stack.Item grow m={-1}>
-                  <Box height={'100%'} p={1} style={{ overflowY: 'auto' }}>
+                <Stack.Item grow m={-1} style={{ overflowY: 'auto' }}>
+                  <Box height={'100%'} p={1}>
                     <Tabs vertical>
                       {tabMode === TABS.foodtype &&
                         mode === MODE.cooking &&
@@ -549,7 +550,7 @@ export const PersonalCrafting = (props) => {
               )}
               {recipes.length > displayLimit && (
                 <Section
-                  mb={2}
+                  mb={1}
                   textAlign="center"
                   style={{ cursor: 'pointer' }}
                   onClick={() => setPages(pages + 1)}

@@ -6,7 +6,7 @@
 		/datum/reagent/fuel = 20,
 		/obj/item/stack/cable_coil = 15,
 		/obj/item/assembly/timer = 1,
-		/obj/item/pipe/quaternary/pipe = 1,
+		/obj/item/pipe = 1,
 	)
 	time = 6 SECONDS
 	category = CAT_CHEMISTRY
@@ -15,7 +15,7 @@
 	name = "Molotov"
 	result = /obj/item/reagent_containers/cup/glass/bottle/molotov
 	reqs = list(
-		/obj/item/reagent_containers/cup/rag = 1,
+		/obj/item/rag = 1,
 		/obj/item/reagent_containers/cup/glass/bottle = 1,
 	)
 	parts = list(/obj/item/reagent_containers/cup/glass/bottle = 1)

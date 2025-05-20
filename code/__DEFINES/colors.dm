@@ -216,6 +216,13 @@
 #define COLOR_SAMPLE_BROWN "#91542d"
 #define COLOR_SAMPLE_GRAY "#5e5856"
 
+///Colors for blood greyscale sprites
+#define BLOOD_COLOR_RED "#FF291E" // This is lighter than the blood reagent itself because for the greyscale to look the same as before it needs to be the lightest parts of the sprite.
+#define BLOOD_COLOR_LIZARD "#047200"
+#define BLOOD_COLOR_XENO "#D5FF2C"
+#define BLOOD_COLOR_OIL "#262626"
+#define BLOOD_COLOR_BLACK "#2C0903"
+
 ///Main colors for UI themes
 #define COLOR_THEME_MIDNIGHT "#6086A0"
 #define COLOR_THEME_PLASMAFIRE "#FFB200"
@@ -435,6 +442,20 @@
 #define COLOR_ICECREAM_CUSTOM "#f3f3f3"
 #define COLOR_ICECREAM_CHERRY_CHOCOLATE "#800000"
 
+// defines for .38 ammo type colors
+#define COLOR_AMMO_TRACK "#bd0ed4"
+#define COLOR_AMMO_MATCH "#ff0000a8"
+#define COLOR_AMMO_RUBBER "#3d3181"
+#define COLOR_AMMO_TRUESTRIKE "#ff05de"
+#define COLOR_AMMO_DUMDUM "#ffe601"
+#define COLOR_AMMO_HOTSHOT "#ff7b00"
+#define COLOR_AMMO_ICEBLOX "#0de3ff"
+
+// defines for other ammo type colors (should this be merged with above?)
+#define COLOR_AMMO_INCENDIARY "#f4001f"
+#define COLOR_AMMO_ARMORPIERCE "#d9d9d9"
+#define COLOR_AMMO_HOLLOWPOINT "#ff9900"
+
 GLOBAL_LIST_INIT(cable_colors, list(
 	CABLE_COLOR_BLUE = CABLE_HEX_COLOR_BLUE,
 	CABLE_COLOR_CYAN = CABLE_HEX_COLOR_CYAN,
@@ -468,6 +489,25 @@ GLOBAL_LIST_INIT(heretic_path_to_color, list(
 
 // Lowest priority
 #define EYE_COLOR_ORGAN_PRIORITY 1
+/// Base priority for atom colors, gets atom priorities added to it
+#define EYE_COLOR_ATOM_COLOR_PRIORITY 2
 #define EYE_COLOR_SPECIES_PRIORITY 10
 #define EYE_COLOR_WEED_PRIORITY 20
-#define EYE_COLOR_CULT_PRIORITY 30
+#define EYE_COLOR_HUD_PRIORITY 30
+#define EYE_COLOR_LUMINESCENT_PRIORITY 40
+#define EYE_COLOR_CULT_PRIORITY 50
+
+// Client color priorities
+
+#define CLIENT_COLOR_GLASSES_PRIORITY 1 // Lowest there is, used by glasses
+#define CLIENT_COLOR_HELMET_PRIORITY 2 // Same but for helmets
+#define CLIENT_COLOR_ORGAN_PRIORITY 3 // For heads and organs
+#define CLIENT_COLOR_FILTER_PRIORITY 4 // Filters which should go ontop of previous ones
+#define CLIENT_COLOR_TEMPORARY_PRIORITY 5 // Temporary flashing effects
+#define CLIENT_COLOR_IMPORTANT_PRIORITY 6 // Gameplay important hints signifying antag status or near-death, should be always shown
+#define CLIENT_COLOR_OVERRIDE_PRIORITY 7 // For effects that are meant to mask all others for technical reasons
+
+//Luma coefficients suggested for HDTVs. If you change these, make sure they add up to 1.
+#define LUMA_R 0.213
+#define LUMA_G 0.715
+#define LUMA_B 0.072
